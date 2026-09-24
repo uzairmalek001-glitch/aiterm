@@ -1,0 +1,1 @@
+let n: number = 'hello';

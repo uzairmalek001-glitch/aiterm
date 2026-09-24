@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aiterm"
+version = "0.1.0"
+description = "A code-aware terminal: continuous local diagnostics with an optional AI debugging layer."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = []                      # stdlib only
+
+[project.optional-dependencies]
+watch = ["watchdog>=4"]                # inotify-based file events
+dev = ["pytest>=8", "ruff"]
+
+[project.scripts]
+aiterm = "aiterm.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "tests"]
+testpaths = ["tests"]

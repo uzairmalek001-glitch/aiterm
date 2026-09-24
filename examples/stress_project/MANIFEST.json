@@ -1,0 +1,263 @@
+{
+  "syntax/missing_colon_for.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/missing_colon_if.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/missing_colon_def.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/missing_colon_class.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/missing_colon_while.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/unclosed_paren.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/unclosed_bracket.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/unclosed_brace.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/unterminated_string.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/unterminated_triple.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/bad_indent.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/unexpected_indent.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/unindent_mismatch.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/py2_print.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/double_equals_assign.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/assign_to_literal.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/else_without_if.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/bad_def_args.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/missing_comma_dict.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/keyword_as_name.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/incomplete_import.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/bad_fstring.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/mismatched_brackets.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/dangling_operator.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/lambda_bad.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/decorator_alone.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "syntax/try_without_except.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "imports/missing_third_party.py": {
+    "expect": "IMPORT_ERROR",
+    "mode": "static"
+  },
+  "imports/missing_from_import.py": {
+    "expect": "IMPORT_ERROR",
+    "mode": "static"
+  },
+  "imports/missing_submodule.py": {
+    "expect": "IMPORT_ERROR",
+    "mode": "static"
+  },
+  "runtime/zero_division.py": {
+    "expect": "ZeroDivisionError",
+    "mode": "runtime"
+  },
+  "runtime/key_error.py": {
+    "expect": "KeyError",
+    "mode": "runtime"
+  },
+  "runtime/type_error.py": {
+    "expect": "TypeError",
+    "mode": "runtime"
+  },
+  "runtime/index_error.py": {
+    "expect": "IndexError",
+    "mode": "runtime"
+  },
+  "runtime/attribute_error.py": {
+    "expect": "AttributeError",
+    "mode": "runtime"
+  },
+  "runtime/name_error.py": {
+    "expect": "NameError",
+    "mode": "runtime"
+  },
+  "runtime/value_error.py": {
+    "expect": "ValueError",
+    "mode": "runtime"
+  },
+  "runtime/file_not_found.py": {
+    "expect": "FileNotFoundError",
+    "mode": "runtime"
+  },
+  "runtime/assertion.py": {
+    "expect": "AssertionError",
+    "mode": "runtime"
+  },
+  "runtime/recursion.py": {
+    "expect": "RecursionError",
+    "mode": "runtime"
+  },
+  "runtime/unbound_local.py": {
+    "expect": "UnboundLocalError",
+    "mode": "runtime"
+  },
+  "runtime/stop_iteration.py": {
+    "expect": "StopIteration",
+    "mode": "runtime"
+  },
+  "big_module.py": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static",
+    "line": 491
+  },
+  "c/missing_semicolon.c": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "c/undeclared_var.c": {
+    "expect": "COMPILATION_ERROR",
+    "mode": "static"
+  },
+  "c/too_many_args.c": {
+    "expect": "TYPE_ERROR",
+    "mode": "static"
+  },
+  "c/unterminated_string.c": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "c/missing_brace.c": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "c/missing_header.c": {
+    "expect": "IMPORT_ERROR",
+    "mode": "static"
+  },
+  "c/wrong_type.c": {
+    "expect": "TYPE_ERROR",
+    "mode": "static"
+  },
+  "c/undefined_func.cpp": {
+    "expect": "COMPILATION_ERROR",
+    "mode": "static"
+  },
+  "c/cpp_no_match.cpp": {
+    "expect": "TYPE_ERROR",
+    "mode": "static"
+  },
+  "c/cpp_missing_semi.cpp": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "js/unclosed_brace.js": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "js/bad_token.js": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "js/missing_paren.js": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "js/reserved_word.js": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "js/unterminated_str.js": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "js/dup_declare.js": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  },
+  "ts/string_to_number.ts": {
+    "expect": "TYPE_ERROR",
+    "mode": "static"
+  },
+  "ts/missing_prop.ts": {
+    "expect": "TYPE_ERROR",
+    "mode": "static"
+  },
+  "ts/wrong_arg.ts": {
+    "expect": "TYPE_ERROR",
+    "mode": "static"
+  },
+  "ts/undefined_name.ts": {
+    "expect": "TYPE_ERROR",
+    "mode": "static"
+  },
+  "ts/return_type.ts": {
+    "expect": "TYPE_ERROR",
+    "mode": "static"
+  },
+  "ts/missing_semi_brace.ts": {
+    "expect": "SYNTAX_ERROR",
+    "mode": "static"
+  }
+}

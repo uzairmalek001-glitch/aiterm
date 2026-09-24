@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.aiterm/
+*.egg-info/
+dist/
+build/
+aiterm.toml
