@@ -118,7 +118,12 @@ def cmd_run(args) -> int:
     if not cmd:
         print("usage: aiterm run -- <command>", file=sys.stderr)
         return 2
-    rc = run_command(cmd, lambda t: mon.process_output_now(t))
+    rc = run_command(
+        cmd,
+        lambda t: mon.process_output_now(t),
+        result_feed=lambda text, exit_code, command:
+            mon.process_command_now(text, exit_code, " ".join(command)),
+    )
     return rc
 
 

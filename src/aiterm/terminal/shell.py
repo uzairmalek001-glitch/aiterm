@@ -8,7 +8,12 @@ import sys
 from typing import Callable, List, Optional
 
 
-def run_command(cmd: List[str], feed: Callable[[str], None], cwd: Optional[str] = None) -> int:
+def run_command(
+    cmd: List[str],
+    feed: Callable[[str], None],
+    cwd: Optional[str] = None,
+    result_feed: Optional[Callable[[str, int, List[str]], None]] = None,
+) -> int:
     """`aiterm run -- <cmd>`: run a command, stream its output, and analyse it afterwards."""
     p = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, errors="replace")
     buf = []
@@ -18,7 +23,10 @@ def run_command(cmd: List[str], feed: Callable[[str], None], cwd: Optional[str] 
         sys.stdout.flush()
         buf.append(line)
     rc = p.wait()
-    feed("".join(buf))
+    output = "".join(buf)
+    feed(output)
+    if result_feed:
+        result_feed(output, rc, cmd)
     return rc
 
 

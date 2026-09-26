@@ -11,6 +11,7 @@ from typing import Dict, Iterable, List
 from aiterm.analyzers import python as _py
 from aiterm.analyzers.base import get_analyzer, rel
 from aiterm.core.config import Config
+from aiterm.core.classifier import classify
 from aiterm.core.models import Diagnostic
 from aiterm.terminal.output_parser import parse_output
 
@@ -72,6 +73,71 @@ class DiagnosticEngine:
                  if not any(s in d.message for s in self.cfg.ignore_messages)]
         for d in diags:
             self.current.setdefault(d.file, {})[d.fingerprint] = d
+        return diags
+
+    @staticmethod
+    def _extract_location(text: str):
+        """Extract a source-file and line number from command output."""
+        import re
+
+        # Format 1: file.py:10
+        direct = re.compile(
+            r'(?<!https://)(?<!http://)'
+            r'(?P<path>(?:[A-Za-z]:[\\/]|/|\.\.?/)?'
+            r'[A-Za-z0-9_.-]+(?:[\\/][A-Za-z0-9_.-]+)*'
+            r'\.[A-Za-z][A-Za-z0-9_-]*)'
+            r':(?P<line>\d+)(?!\d)'
+        )
+
+        for match in direct.finditer(text):
+            token_start = text.rfind(" ", 0, match.start()) + 1
+            token = text[token_start:match.end()]
+            if "://" not in token:
+                return match.group("path"), int(match.group("line"))
+
+        # Format 2: file.py: ... at line 10
+        contextual = re.compile(
+            r'(?P<path>(?:[A-Za-z]:[\\/]|/|\.\.?/)?'
+            r'[A-Za-z0-9_.-]+(?:[\\/][A-Za-z0-9_.-]+)*'
+            r'\.[A-Za-z][A-Za-z0-9_-]*)'
+            r':[^\n]{0,200}?\bline\s+(?P<line>\d+)\b',
+            re.IGNORECASE,
+        )
+
+        for match in contextual.finditer(text):
+            return match.group("path"), int(match.group("line"))
+
+        return None, 0
+
+    def ingest_command_result(
+        self,
+        text: str,
+        exit_code: int,
+        command: str = "<command>",
+        source: str = "terminal",
+    ) -> List[Diagnostic]:
+        """Parse command output and create a fallback diagnostic on failure."""
+        diags = self.ingest_output(text, source)
+
+        if exit_code != 0 and not diags:
+            location, line = self._extract_location(text)
+
+            d = Diagnostic(
+                file=location or command,
+                line=line,
+                column=0,
+                severity="error",
+                category="UNKNOWN",
+                message=f"Command failed with exit code {exit_code}: {command}",
+                source="command-exit",
+                raw=text[-2000:],
+            )
+
+            d.category = classify(d)
+
+            self.current.setdefault(d.file, {})[d.fingerprint] = d
+            diags.append(d)
+
         return diags
 
     # ---------- suppression ----------

@@ -72,6 +72,11 @@ class Monitor:
         with self._lock:
             return self._handle(self.engine.analyze_paths(paths))
 
+    def process_command_now(self, text: str, exit_code: int, command: str) -> int:
+        with self._lock:
+            diags = self.engine.ingest_command_result(text, exit_code, command)
+            return self._handle(diags)
+
     def _handle(self, diags) -> int:
         """Notify immediately with local facts; AI enrichment is queued and never blocks monitoring."""
         try:
