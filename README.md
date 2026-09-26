@@ -1,72 +1,271 @@
-# aiterm — a code-aware terminal
+AITerm V2 — a reasoning terminal
 
-A real interactive shell (PTY) plus a background monitor that watches your project, runs **deterministic** tooling
-(compilers, linters, `ast`, test output), and pops up a short, structured notification when something breaks.
-AI is an *optional explanation layer* on top — never the detector, never required, never a single point of failure.
+AITerm is a code-aware terminal with a real interactive shell (PTY) and a background monitoring pipeline that turns failures into structured, evidence-backed diagnostics.
 
-```
-file change → debounce → project/language → local diagnostics → classify → (context+redact → AI?) → notification
-```
+AI is an optional reasoning/enrichment layer — never the detector, never required, and never a single point of failure.
 
-## Install
-```bash
-pip install -e .            # stdlib-only core, Python 3.11+
-pip install -e ".[watch]"   # + inotify events via watchdog (otherwise cheap mtime polling)
-pip install -e ".[dev]"     # + pytest, ruff
-aiterm doctor               # what's available on this machine
-```
+V2 architecture
 
-## Quick start with Gemini (AI is off until you enable it)
-```bash
-export GEMINI_API_KEY=...            # never put the key in a file
-aiterm config --init                 # writes aiterm.toml
-# edit aiterm.toml:  [ai] enabled = true,  provider = "gemini",  model = "<your model id>"
-aiterm doctor                        # confirms the key is visible and AI is enabled
-aiterm analyze --ai                  # or: aiterm explain <id>;  set auto = true for background explanations
-```
-AI calls run on a background worker: you always get the local notification first, and an AI follow-up when it arrives.
+Terminal / Watcher / Tests / Analyzers
+                ↓
+         Evidence Collector
+                ↓
+             Parser
+                ↓
+       Failure Classifier
+                ↓
+      Project Context Resolver
+                ↓
+        Deterministic Diagnosis
+                ↓
+        ┌───────┴───────┐
+        ↓               ↓
+   Local reasoning   Optional AI
+        ↓               ↓
+        └───────┬───────┘
+                ↓
+             Diagnosis
+                ↓
+        Fix / Verification
+                ↓
+          History / Memory
 
-## Use
-| Command | What it does |
-|---|---|
-| `aiterm` / `aiterm start` | Your `$SHELL` in a PTY + live monitoring (output tapped for tracebacks/compiler errors) |
-| `aiterm watch` | Monitoring only; prints notification boxes |
-| `aiterm analyze [path] [--json] [--ai]` | One-shot analysis (exit code 1 on errors, CI-friendly) |
-| `aiterm run -- <cmd>` | Run a command and analyse its output (tracebacks, gcc/rustc/tsc, pytest failures) |
-| `aiterm history` | Recent problems and their ids |
-| `aiterm explain <id>` | Local hint, plus AI analysis if enabled |
-| `aiterm fix <id>` | Show a unified diff; applies **only** after you type `y`; makes a backup |
-| `aiterm config [--init]` | Show effective config / write `aiterm.toml` |
-| `aiterm doctor` | Toolchain, watcher, notify-send, AI key checks |
+The core design principle is:
 
-Try it: `cd examples/broken_python && aiterm analyze` (missing colon, a moved class import, a missing package).
+Evidence ≠ Hypothesis ≠ Conclusion
 
-## What's deterministic vs. AI
-Detected facts (file, line, message, category, fingerprint) always come from tools. AI output is shown under
-"AI analysis (inference, confidence …)" and stored separately. AI is skipped when a local fix exists, and is
-on-demand by default (`ai.auto = false`).
+AITerm first works from observable tool output. AI can enrich the result later, but deterministic detection and initial diagnosis continue to work without an AI backend.
 
-## Languages
-Python (`ast` + import resolution + optional `ruff`), JavaScript (`node --check`), TypeScript (`tsc`), C (`gcc`),
-C++ (`g++`), Java (`javac`), Kotlin (`kotlinc`), Rust (`cargo check` / `rustc`). A missing compiler simply disables
-that analyzer (see `aiterm doctor`). Add a language: subclass `LanguageAnalyzer`, decorate with `@register`
-(see `analyzers/tools.py`, ~6 lines).
+V2 milestone
 
-## Docs
-[Architecture](docs/ARCHITECTURE.md) · [Configuration](docs/CONFIGURATION.md) · [Security & privacy](docs/SECURITY.md) ·
-[AI providers](docs/AI_PROVIDERS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
+AITerm V2 can now turn application-level command failures into structured diagnostics.
 
-## Tests
-`pytest -q` or `cd tests && python -m unittest discover` (97 tests: debouncing, watching, parsers, redaction, AI
-context, providers, outages, patches, history crash-recovery, and end-to-end runs on broken example projects).
+Added in V2
 
-## Known limitations (v0.1)
-- Desktop popups use `notify-send` (Linux only). On other OSes you get terminal notifications and the log file.
-- TypeScript with a `tsconfig.json` runs `tsc --noEmit -p` for the whole project and Rust runs `cargo check`; on large
-  projects this is heavy (the debouncer and content-hash cache limit repeats). Incremental/project-level analysis is future work.
-- Config is TOML (stdlib) rather than YAML to keep zero dependencies.
-- Interactive PTY shell and `WatchdogWatcher` need manual testing on your machine; automated tests cover the polling
-  watcher, the output parser, and the monitor pipeline.
-- Notifications inside `aiterm start` are written to stderr / desktop, not a full-screen TUI panel yet.
-- Automatic patches are single-line replacements (deterministic or AI `fixed_line`); multi-line AI patches are shown as text.
-- Java/Kotlin/Rust analyzers are implemented and parser-tested but were not run against real toolchains here.
+- Command-result bridge
+  
+  - Captures command output together with exit codes.
+  - Handles failures even when the application does not emit a standard traceback.
+
+- Source-location extraction
+  
+  - Extracts paths and line numbers from application output.
+  - Supports formats such as "file.py:10" and contextual "at line 10" messages.
+
+- Deterministic failure classification
+  
+  - Configuration errors
+  - Syntax errors
+  - Type errors
+  - Import errors
+  - Dependency errors
+  - Runtime errors
+  - Test failures
+  - Compilation errors
+  - Unknown failures when evidence is insufficient
+
+- Evidence-based diagnosis
+  
+  - Category
+  - Cause
+  - Confidence
+  - Supporting evidence
+  - Verification guidance
+
+- VisionTrack integration
+  
+  - AITerm V2 has been tested against real VisionTrack application-level failures.
+  - VisionTrack configuration errors can be captured, located, classified, and diagnosed by AITerm.
+
+- Regression coverage
+  
+  - Classifier and diagnosis layers have dedicated tests.
+  - Current regression suite: 128 tests passing.
+
+Example: VisionTrack
+
+Given a VisionTrack command:
+
+aiterm run -- visiontrack inspect-config config/bad.yaml
+
+VisionTrack reports:
+
+Invalid configuration: config/bad.yaml:
+invalid YAML at line 3, column 1:
+expected ',' or ']', but got '<stream end>'
+
+AITerm extracts the relevant evidence:
+
+Category: CONFIGURATION_ERROR
+File: config/bad.yaml
+Line: 3
+
+And produces a deterministic diagnosis:
+
+Cause: malformed YAML configuration
+Confidence: high
+
+Evidence:
+- invalid YAML
+- parser expected a closing bracket
+- parser expected a comma
+- parser reported an error at line 3
+
+Verification:
+Inspect config/bad.yaml around line 3
+and validate the configuration syntax.
+
+No AI model is required for this initial reasoning.
+
+AI can subsequently provide optional deeper analysis when enabled.
+
+Install
+
+pip install -e .
+
+Optional watcher support:
+
+pip install -e ".[watch]"
+
+Development dependencies:
+
+pip install -e ".[dev]"
+
+Check the local environment:
+
+aiterm doctor
+
+Quick start with Gemini
+
+AI is disabled until explicitly enabled.
+
+export GEMINI_API_KEY=...
+aiterm config --init
+
+Then configure the AI provider in "aiterm.toml":
+
+[ai]
+enabled = true
+provider = "gemini"
+model = "<your model id>"
+
+Check the configuration:
+
+aiterm doctor
+
+Run AI-assisted analysis:
+
+aiterm analyze --ai
+
+Or explain an existing diagnostic:
+
+aiterm explain <id>
+
+AI calls run on a background worker. The deterministic/local notification is delivered first, followed by optional AI enrichment.
+
+Use
+
+Command| What it does
+"aiterm" / "aiterm start"| Interactive shell in a PTY with live monitoring
+"aiterm watch"| Monitoring only; prints notification boxes
+"aiterm analyze [path]"| One-shot project/file analysis
+"aiterm analyze [path] --json"| Machine-readable analysis
+"aiterm analyze [path] --ai"| Analysis with optional AI enrichment
+"aiterm run -- <cmd>"| Run a command and analyze its output
+"aiterm history"| Show recent problems and their IDs
+"aiterm explain <id>"| Explain a diagnostic
+"aiterm fix <id>"| Show a proposed fix and require explicit approval
+"aiterm config"| Show effective configuration
+"aiterm config --init"| Create "aiterm.toml"
+"aiterm doctor"| Check available tools, watchers, notifications, and AI configuration
+
+Deterministic vs AI
+
+Deterministic layer
+
+The following remain locally derived from observable evidence:
+
+- file
+- line
+- column
+- severity
+- category
+- message
+- fingerprint
+- diagnostic identity
+- initial diagnosis
+- verification guidance
+
+AI layer
+
+AI output is explicitly separated as inference.
+
+For example:
+
+AI analysis (inference, confidence 95%)
+...
+(manual review recommended)
+
+AI does not become the source of truth for the original diagnostic.
+
+Supported languages
+
+Current analyzers include:
+
+- Python
+- JavaScript
+- TypeScript
+- C
+- C++
+- Java
+- Kotlin
+- Rust
+
+A missing compiler or toolchain disables the corresponding analyzer rather than preventing AITerm from operating.
+
+Add a language by implementing a "LanguageAnalyzer" and registering it with the analyzer system.
+
+Tests
+
+Run the complete test suite:
+
+pytest -q
+
+Current V2 regression baseline:
+
+128 tests passed
+
+Coverage includes monitoring, debouncing, parsers, redaction, AI context, providers, outages, patches, history recovery, command-result handling, deterministic classification, deterministic diagnosis, and end-to-end failure scenarios.
+
+Security and privacy
+
+AITerm follows a local-first architecture.
+
+- AI is optional.
+- API keys are read from the environment.
+- AI context is redacted before external calls.
+- Deterministic diagnostics do not require network access.
+- Proposed patches require explicit approval.
+- AI output is treated as inference rather than verified fact.
+
+Current V2 direction
+
+The current milestone establishes the deterministic reasoning foundation.
+
+Next development areas include:
+
+Deterministic diagnosis
+        ↓
+Project context
+        ↓
+Cross-file reasoning
+        ↓
+Fix proposals
+        ↓
+Verification
+        ↓
+History / memory
+        ↓
+Failure recognition across time
+
+The long-term goal is a terminal that can observe a failure, understand the project context, reason about the evidence, propose a fix, and verify whether the fix actually worked.
