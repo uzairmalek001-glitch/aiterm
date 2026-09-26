@@ -32,7 +32,7 @@ Terminal / Watcher / Tests / Analyzers
 
 The core design principle is:
 
-Evidence ≠ Hypothesis ≠ Conclusion
+«Evidence ≠ Hypothesis ≠ Conclusion»
 
 AITerm first works from observable tool output. AI can enrich the result later, but deterministic detection and initial diagnosis continue to work without an AI backend.
 
@@ -42,45 +42,51 @@ AITerm V2 can now turn application-level command failures into structured diagno
 
 Added in V2
 
-- Command-result bridge
-  
-  - Captures command output together with exit codes.
-  - Handles failures even when the application does not emit a standard traceback.
+Command-result bridge
 
-- Source-location extraction
-  
-  - Extracts paths and line numbers from application output.
-  - Supports formats such as "file.py:10" and contextual "at line 10" messages.
+- Captures command output together with exit codes.
+- Handles failures even when the application does not emit a standard traceback.
 
-- Deterministic failure classification
-  
-  - Configuration errors
-  - Syntax errors
-  - Type errors
-  - Import errors
-  - Dependency errors
-  - Runtime errors
-  - Test failures
-  - Compilation errors
-  - Unknown failures when evidence is insufficient
+Source-location extraction
 
-- Evidence-based diagnosis
-  
-  - Category
-  - Cause
-  - Confidence
-  - Supporting evidence
-  - Verification guidance
+- Extracts paths and line numbers from application output.
+- Supports formats such as "file.py:10" and contextual "at line 10" messages.
 
-- VisionTrack integration
-  
-  - AITerm V2 has been tested against real VisionTrack application-level failures.
-  - VisionTrack configuration errors can be captured, located, classified, and diagnosed by AITerm.
+Deterministic failure classification
 
-- Regression coverage
-  
-  - Classifier and diagnosis layers have dedicated tests.
-  - Current regression suite: 128 tests passing.
+Currently recognizes:
+
+- Configuration errors
+- Syntax errors
+- Type errors
+- Import errors
+- Dependency errors
+- Runtime errors
+- Test failures
+- Compilation errors
+- Unknown failures when evidence is insufficient
+
+Evidence-based diagnosis
+
+Produces:
+
+- Category
+- Cause
+- Confidence
+- Supporting evidence
+- Verification guidance
+
+VisionTrack integration
+
+AITerm V2 has been tested against real VisionTrack application-level failures.
+
+VisionTrack configuration errors can be captured, located, classified, and diagnosed by AITerm.
+
+Regression coverage
+
+Classifier and diagnosis layers have dedicated tests.
+
+Current regression suite: 128 tests passing.
 
 Example: VisionTrack
 
@@ -112,8 +118,7 @@ Evidence:
 - parser reported an error at line 3
 
 Verification:
-Inspect config/bad.yaml around line 3
-and validate the configuration syntax.
+Inspect config/bad.yaml around line 3 and validate the configuration syntax.
 
 No AI model is required for this initial reasoning.
 
@@ -185,16 +190,16 @@ Deterministic layer
 
 The following remain locally derived from observable evidence:
 
-- file
-- line
-- column
-- severity
-- category
-- message
-- fingerprint
-- diagnostic identity
-- initial diagnosis
-- verification guidance
+- File
+- Line
+- Column
+- Severity
+- Category
+- Message
+- Fingerprint
+- Diagnostic identity
+- Initial diagnosis
+- Verification guidance
 
 AI layer
 
