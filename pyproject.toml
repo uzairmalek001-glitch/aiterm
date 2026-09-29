@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aiterm"
-version = "0.1.0"
+version = "2.0.0"
 description = "A code-aware terminal: continuous local diagnostics with an optional AI debugging layer."
 readme = "README.md"
 requires-python = ">=3.11"
